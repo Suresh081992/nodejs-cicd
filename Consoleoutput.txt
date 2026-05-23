@@ -1,0 +1,130 @@
+Started by user suresh
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/nodejs-cicd
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Clone Code)
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/nodejs-cicd/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Suresh081992/nodejs-cicd.git # timeout=10
+Fetching upstream changes from https://github.com/Suresh081992/nodejs-cicd.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.53.0'
+ > git fetch --tags --force --progress -- https://github.com/Suresh081992/nodejs-cicd.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 0d41d3204413b19692073256e246dbdacf99f4e4 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 0d41d3204413b19692073256e246dbdacf99f4e4 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D main # timeout=10
+ > git checkout -b main 0d41d3204413b19692073256e246dbdacf99f4e4 # timeout=10
+Commit message: "Initial commit"
+ > git rev-list --no-walk 0d41d3204413b19692073256e246dbdacf99f4e4 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker Image)
+[Pipeline] sh
++ docker build -t nodejs-app .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  3.568MB
+Step 1/7 : FROM node:20
+20: Pulling from library/node
+2933ecab0f11: Pulling fs layer
+c83419f44309: Pulling fs layer
+76e6b8204a89: Pulling fs layer
+db53381ee51f: Pulling fs layer
+2f2ab6e4eb46: Pulling fs layer
+e5203b2bfeff: Pulling fs layer
+0b22ec2d9b1a: Pulling fs layer
+8fcda2b4d799: Pulling fs layer
+0b22ec2d9b1a: Download complete
+c83419f44309: Download complete
+3e22c7cc721e: Download complete
+2f2ab6e4eb46: Download complete
+e5203b2bfeff: Download complete
+6db081db89c0: Download complete
+db53381ee51f: Download complete
+76e6b8204a89: Download complete
+8fcda2b4d799: Download complete
+db53381ee51f: Pull complete
+e5203b2bfeff: Pull complete
+2933ecab0f11: Download complete
+8fcda2b4d799: Pull complete
+2933ecab0f11: Pull complete
+c83419f44309: Pull complete
+76e6b8204a89: Pull complete
+2f2ab6e4eb46: Pull complete
+0b22ec2d9b1a: Pull complete
+Digest: sha256:8f693eaa7e0a8e71560c9a82b55fd54c2ae920a2ba5d2cde28bac7d1c01c9ba5
+Status: Downloaded newer image for node:20
+ ---> 8f693eaa7e0a
+Step 2/7 : WORKDIR /app
+ ---> Running in 0905052a6a45
+ ---> Removed intermediate container 0905052a6a45
+ ---> b8afcf299a6a
+Step 3/7 : COPY package*.json ./
+ ---> 60acdcaf02db
+Step 4/7 : RUN npm install
+ ---> Running in ca8d6df51bd0
+
+added 66 packages, and audited 67 packages in 2s
+
+24 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[91mnpm notice
+npm notice New major version of npm available! 10.8.2 -> 11.15.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.15.0
+npm notice To update run: npm install -g npm@11.15.0
+npm notice
+[0m ---> Removed intermediate container ca8d6df51bd0
+ ---> 5c038d0582f9
+Step 5/7 : COPY . .
+ ---> 2dc533884071
+Step 6/7 : EXPOSE 3000
+ ---> Running in 7a87f56f7f00
+ ---> Removed intermediate container 7a87f56f7f00
+ ---> 29f8ad8158c6
+Step 7/7 : CMD ["node", "app.js"]
+ ---> Running in ed2b05feaa58
+ ---> Removed intermediate container ed2b05feaa58
+ ---> 1e8127e2d2ab
+Successfully built 1e8127e2d2ab
+Successfully tagged nodejs-app:latest
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Stop Old Container)
+[Pipeline] sh
++ docker stop node-container
+Error response from daemon: No such container: node-container
++ true
++ docker rm node-container
+Error response from daemon: No such container: node-container
++ true
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run New Container)
+[Pipeline] sh
++ docker run -d --name node-container -p 80:3000 nodejs-app
+e1de81d1e55d4f161018ff84c626e82534c62b92b9d6291f3ecc9e0e3f3fa53a
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
